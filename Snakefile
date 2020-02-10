@@ -2,6 +2,7 @@ import os
 import gzip
 import sys
 
+include: "rules/common.smk"
 include: "rules/mosdepth.smk"
 include: "rules/plots.smk"
 include: "rules/align.smk"

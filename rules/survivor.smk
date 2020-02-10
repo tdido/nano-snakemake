@@ -4,6 +4,10 @@ rule survivor:
     output:
         vcf = temp("{aligner}/{caller}_combined/{stage}.vcf"),
         fofn = temp("{aligner}/{caller}_{stage}/samples.fofn")
+    threads: get_resource("survivor", "threads")
+    resources:
+        mem=get_resource("survivor", "mem"),
+        walltime=get_resource("survivor", "walltime")
     params:
         distance = config["parameters"]["survivor_distance"],
         caller_support = 1,
@@ -28,6 +32,10 @@ rule survivor_all:
     output:
         vcf = temp("{aligner}/all_combined/genotypes.vcf"),
         fofn = temp("{aligner}/all_combined/samples.fofn")
+    threads: get_resource("survivor_all", "threads")
+    resources:
+        mem=get_resource("survivor_all", "mem"),
+        walltime=get_resource("survivor_all", "walltime")
     params:
         distance = config["parameters"]["survivor_distance"],
         caller_support = 1,
@@ -50,6 +58,10 @@ rule bgzip_and_tabix:
         "{aligner}/{caller}_genotypes/{sample}.vcf"
     output:
         "{aligner}/{caller}_genotypes/{sample}.vcf.gz"
+    threads: get_resource("bgzip_and_tabix", "threads")
+    resources:
+        mem=get_resource("bgzip_and_tabix", "mem"),
+        walltime=get_resource("bgzip_and_tabix", "walltime")
     log:
         "logs/{aligner}/bgzip-tabix/{caller}-{sample}.log"
     shell:

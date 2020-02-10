@@ -24,6 +24,10 @@ rule bcftools_reheader:
     output:
         vcf = temp("{aligner}/split_nanosv_genotypes_renamed/{sample}-{chromosome}.vcf"),
         sample = temp("{aligner}/split_nanosv_genotypes_renamed/sample_{sample}-{chromosome}.txt")
+    threads: get_resource("bcftools_reheader", "threads")
+    resources:
+        mem=get_resource("bcftools_reheader", "mem"),
+        walltime=get_resource("bcftools_reheader", "walltime")
     params:
         sample = "{sample}"
     log:
@@ -42,6 +46,10 @@ rule bcftools_reheader_sniffles:
     output:
         vcf = "{aligner}/sniffles_genotypes/{sample}.vcf",
         sample = temp("{aligner}/sniffles_genotypes/sample_{sample}.txt")
+    threads: get_resource("bcftools_reheader_sniffles", "threads")
+    resources:
+        mem=get_resource("bcftools_reheader_sniffles", "mem"),
+        walltime=get_resource("bcftools_reheader_sniffles", "walltime")
     params:
         sample = "{sample}"
     log:
@@ -59,6 +67,10 @@ rule cat_vcfs:
                chromosome=CHROMOSOMES)
     output:
         "{aligner}/nanosv_genotypes/{sample}.vcf"
+    threads: get_resource("cat_vcfs", "threads")
+    resources:
+        mem=get_resource("cat_vcfs", "mem"),
+        walltime=get_resource("cat_vcfs", "walltime")
     log:
         "logs/{aligner}/bcftools-concat/{sample}.log"
     conda: "../envs/bcftools.yaml"
@@ -70,10 +82,13 @@ rule sort_vcf:
         "{aligner}/{caller}_combined/genotypes.vcf"
     output:
         temp("{aligner}/{caller}_combined/sorted_genotypes.vcf")
+    threads: get_resource("sort_vcf", "threads")
+    resources:
+        mem=get_resource("sort_vcf", "mem"),
+        walltime=get_resource("sort_vcf", "walltime")
     log:
         "logs/{aligner}/bcftools_sort/sorting_{caller}.log"
     conda: "../envs/bcftools.yaml"
-    threads: 8
     shell:
         "bcftools sort {input} > {output} 2> {log}"
 
@@ -87,7 +102,10 @@ rule annotate_vcf:
         "logs/{aligner}/annotate_vcf/annotate_{caller}.log"
     params:
         conf = config["vcfanno_conf"],
-    threads: 8
+    threads: get_resource("annotate_vcf", "threads")
+    resources:
+        mem=get_resource("annotate_vcf", "mem"),
+        walltime=get_resource("annotate_vcf", "walltime")
     conda: "../envs/vcfanno.yaml"
     shell:
         "vcfanno -ends -p {threads} {params.conf} {input} > {output} 2> {log}"

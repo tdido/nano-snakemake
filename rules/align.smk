@@ -12,8 +12,10 @@ rule minimap2_align:
         "minimap2/alignment/{sample}.bam"
     params:
         sample = "{sample}"
-    threads:
-        8
+    threads: get_resource("minimap2_align", "threads")
+    resources:
+        mem=get_resource("minimap2_align", "mem"),
+        walltime=get_resource("minimap2_align", "walltime")
     log:
         "logs/minimap2/{sample}.log"
     conda: "../envs/minimap.yaml"
@@ -31,8 +33,10 @@ rule minimap2_pbsv_align:
         genome = config["genome"]
     output:
         "minimap2_pbsv/alignment/{sample}.bam"
-    threads:
-        8
+    threads: get_resource("minimap2_align", "threads")
+    resources:
+        mem=get_resource("minimap2_align", "mem"),
+        walltime=get_resource("minimap2_align", "walltime")
     params:
         sample = "{sample}"
     log:
@@ -52,8 +56,10 @@ rule ngmlr_align:
         genome = config["genome"]
     output:
         protected("ngmlr/alignment/{sample}.bam")
-    threads:
-        36
+    threads: get_resource("ngmlr_align", "threads")
+    resources:
+        mem=get_resource("ngmlr_align", "mem"),
+        walltime=get_resource("ngmlr_align", "walltime")
     log:
         "logs/ngmlr/{sample}.log"
     conda: "../envs/ngmlr.yaml"
@@ -68,7 +74,10 @@ rule samtools_index:
         "{aligner}/alignment/{sample}.bam"
     output:
         "{aligner}/alignment/{sample}.bam.bai"
-    threads: 4
+    threads: get_resource("samtools_index", "threads")
+    resources:
+        mem=get_resource("samtools_index", "mem"),
+        walltime=get_resource("samtools_index", "walltime")
     conda: "../envs/samtools.yaml"
     log:
         "logs/{aligner}/samtools_index/{sample}.log"
@@ -81,6 +90,10 @@ rule alignment_stats:
         bai = expand("{{aligner}}/alignment/{sample}.bam.bai", sample=config["samples"])
     output:
         "{aligner}/alignment_stats/{sample}.txt"
+    threads: get_resource("alignment_stats", "threads")
+    resources:
+        mem=get_resource("alignment_stats", "mem"),
+        walltime=get_resource("alignment_stats", "walltime")
     log:
         "logs/{aligner}/alignment_stats/{sample}.log"
     conda: "../envs/pysam.yaml"
@@ -98,7 +111,10 @@ rule make_last_index:
         indexf = "last/index/windowmasked-index.bck",
     log:
         "logs/last/mask_and_build_index/index.log"
-    threads: 24
+    threads: get_resource("make_last_index", "threads")
+    resources:
+        mem=get_resource("make_last_index", "mem"),
+        walltime=get_resource("make_last_index", "walltime")
     params:
         index_base = "last/index/windowmasked-index"
     conda: "../envs/last.yaml"
@@ -122,7 +138,10 @@ rule last_train:
     conda: "../envs/last.yaml"
     params:
         index_base = "last/index/windowmasked-index"
-    threads: 36
+    threads: get_resource("last_train", "threads")
+    resources:
+        mem=get_resource("last_train", "mem"),
+        walltime=get_resource("last_train", "walltime")
     shell:
         """
         for i in {input.fq}; do echo ${{i}}/*.fastq.gz >> {output.fqs}; done 2>> {log}
@@ -135,7 +154,10 @@ rule last_align:
     input:
         fq = get_samples,
         genome = config["genome"],
-    threads: 16
+    threads: get_resource("last_align", "threads")
+    resources:
+        mem=get_resource("last_align", "mem"),
+        walltime=get_resource("last_align", "walltime")
     params:
         index_base = config["last-index"],
         train = config["last-train"],

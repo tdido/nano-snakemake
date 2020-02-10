@@ -3,7 +3,10 @@ rule svim_call:
         "{aligner}/alignment/{sample}.bam"
     output:
         "{aligner}/svim_calls/{sample}/final_results.vcf"
-    threads: 1
+    threads: get_resource("svim_call", "threads")
+    resources:
+        mem=get_resource("svim_call", "mem"),
+        walltime=get_resource("svim_call", "walltime")
     conda: "../envs/svim.yaml"
     log:
         "logs/{aligner}/svim_call/{sample}.log"
@@ -16,7 +19,10 @@ rule filter_svim:
         "{aligner}/svim_calls/{sample}/final_results.vcf"
     output:
         "{aligner}/svim_genotypes/{sample,[A-Za-z0-9]+}.vcf"
-    threads: 1
+    threads: get_resource("filter_svim", "threads")
+    resources:
+        mem=get_resource("filter_svim", "mem"),
+        walltime=get_resource("filter_svim", "walltime")
     log:
         "logs/{aligner}/svim_call/{sample}.filter.log"
     shell:
@@ -29,7 +35,10 @@ rule sniffles_call:
         "{aligner}/alignment/{sample}.bam"
     output:
         "{aligner}/sniffles_calls/{sample}.vcf"
-    threads: 8
+    threads: get_resource("sniffles_call", "threads")
+    resources:
+        mem=get_resource("sniffles_call", "mem"),
+        walltime=get_resource("sniffles_call", "walltime")
     log:
         "logs/{aligner}/sniffles_call/{sample}.log"
     shell:
@@ -41,7 +50,10 @@ rule sniffles_genotype:
         ivcf = "{aligner}/sniffles_combined/calls.vcf"
     output:
         "{aligner}/sniffles_genotypes_temp/{sample}.vcf"
-    threads: 8
+    threads: get_resource("sniffles_genotype", "threads")
+    resources:
+        mem=get_resource("sniffles_genotype", "mem"),
+        walltime=get_resource("sniffles_genotype", "walltime")
     conda: "../envs/sniffles.yaml"
     log:
         "logs/{aligner}/sniffles_genotype/{sample}.log"
@@ -59,6 +71,10 @@ rule samtools_split:
         bai = "{aligner}/alignment/{sample}.bam.bai",
     output:
         temp("{aligner}/alignment/{sample}-{chromosome}.bam")
+    threads: get_resource("samtools_split", "threads")
+    resources:
+        mem=get_resource("samtools_split", "mem"),
+        walltime=get_resource("samtools_split", "walltime")
     params:
         chrom = "{chromosome}"
     log:
@@ -84,8 +100,10 @@ rule nanosv_call:
         temp("{aligner}/split_nanosv_genotypes/{sample}-{chromosome}.vcf")
     params:
         samtools = "samtools"
-    threads:
-        2
+    threads: get_resource("nanosv_call", "threads")
+    resources:
+        mem=get_resource("nanosv_call", "mem"),
+        walltime=get_resource("nanosv_call", "walltime")
     log:
         "logs/{aligner}/nanosv/{sample}-{chromosome}.log"
     conda: "../envs/nanosv.yaml"
@@ -111,6 +129,10 @@ rule npinv:
         bai = "{aligner}/alignment/{sample}.bam.bai",
     output:
         "{aligner}/npinv/{sample}.vcf"
+    threads: get_resource("npinv", "threads")
+    resources:
+        mem=get_resource("npinv", "mem"),
+        walltime=get_resource("npinv", "walltime")
     log:
         "logs/{aligner}/npinv/{sample}.log"
     conda: "../envs/npinv.yaml"
@@ -125,6 +147,10 @@ rule pbsv:
     output:
         vcf = "minimap2_pbsv/pbsv_genotypes/{sample}.vcf",
         svsig = temp("minimap2_pbsv/pbsv_svsig/{sample}.svsig.gz"),
+    threads: get_resource("pbsv", "threads")
+    resources:
+        mem=get_resource("pbsv", "mem"),
+        walltime=get_resource("pbsv", "walltime")
     log:
         "logs/minimap2_pbsv/pbsv/{sample}.log"
     conda: "../envs/pbsv.yaml"
@@ -139,6 +165,10 @@ rule tandem_genotypes:
         "last/last-align/{sample}.maf.gz"
     output:
         "last/tandem-genotypes/{sample}-tg.txt"
+    threads: get_resource("tandem_genotypes", "threads")
+    resources:
+        mem=get_resource("tandem_genotypes", "mem"),
+        walltime=get_resource("tandem_genotypes", "walltime")
     params:
         microsat = config["microsat"],
         refgene = config["refgene"]
@@ -155,6 +185,10 @@ rule reformat_tandem_genotypes:
         expand("last/tandem-genotypes/{sample}-tg.txt", sample=config["samples"])
     output:
         "last/tandem_genotypes_reformatted/combined.txt"
+    threads: get_resource("reformat_tandem_genotypes", "threads")
+    resources:
+        mem=get_resource("reformat_tandem_genotypes", "mem"),
+        walltime=get_resource("reformat_tandem_genotypes", "walltime")
     params:
         names = ' '.join(config["samples"].keys())
     log:

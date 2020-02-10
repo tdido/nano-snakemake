@@ -4,6 +4,10 @@ rule SV_length_plot:
     output:
         plot = "{aligner}/SV-plots/SV-length_{caller}_{stage}_{sample}.png",
         counts = "{aligner}/SV-plots/SV-nucleotides_affected_{caller}_{stage}_{sample}.txt",
+    threads: get_resource("SV_length_plot", "threads")
+    resources:
+        mem=get_resource("SV_length_plot", "mem"),
+        walltime=get_resource("SV_length_plot", "walltime")
     log:
         "logs/{aligner}/svplot/svlength_{caller}_{stage}_{sample}.log"
     conda: "../envs/plots.yaml"
@@ -17,6 +21,10 @@ rule SV_plot_carriers:
         "{aligner}/{caller}_combined/annot_genotypes.vcf"
     output:
         "{aligner}/SV-plots/SV-{caller}_carriers.png"
+    threads: get_resource("SV_plot_carriers", "threads")
+    resources:
+        mem=get_resource("SV_plot_carriers", "mem"),
+        walltime=get_resource("SV_plot_carriers", "walltime")
     log:
         "logs/{aligner}/svplot/svcarriers_{caller}.log"
     conda: "../envs/plots.yaml"
