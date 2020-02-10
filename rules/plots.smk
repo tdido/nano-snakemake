@@ -6,6 +6,7 @@ rule SV_length_plot:
         counts = "{aligner}/SV-plots/SV-nucleotides_affected_{caller}_{stage}_{sample}.txt",
     log:
         "logs/{aligner}/svplot/svlength_{caller}_{stage}_{sample}.log"
+    conda: "../envs/plots.yaml"
     shell:
         os.path.join(workflow.basedir, "scripts/SV-length-plot.py") + \
             " {input} --output {output.plot} --counts {output.counts} 2> {log}"
@@ -18,6 +19,7 @@ rule SV_plot_carriers:
         "{aligner}/SV-plots/SV-{caller}_carriers.png"
     log:
         "logs/{aligner}/svplot/svcarriers_{caller}.log"
+    conda: "../envs/plots.yaml"
     shell:
         os.path.join(workflow.basedir, "scripts/SV-carriers-plot.py") + \
             " {input} --output {output} 2> {log}"

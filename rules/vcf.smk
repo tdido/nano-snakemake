@@ -28,6 +28,7 @@ rule bcftools_reheader:
         sample = "{sample}"
     log:
         "logs/{aligner}/bcftools_reheader/{sample}-{chromosome}.log"
+    conda: "../envs/bcftools.yaml"
     shell:
         """
         echo {params.sample} > {output.sample} &&
@@ -45,6 +46,7 @@ rule bcftools_reheader_sniffles:
         sample = "{sample}"
     log:
         "logs/{aligner}/bcftools_reheader/{sample}.log"
+    conda: "../envs/bcftools.yaml"
     shell:
         """
         echo {params.sample} > {output.sample} &&
@@ -59,6 +61,7 @@ rule cat_vcfs:
         "{aligner}/nanosv_genotypes/{sample}.vcf"
     log:
         "logs/{aligner}/bcftools-concat/{sample}.log"
+    conda: "../envs/bcftools.yaml"
     shell:
         "bcftools concat {input} | bcftools sort - -o {output} 2> {log}"
 
@@ -69,6 +72,7 @@ rule sort_vcf:
         temp("{aligner}/{caller}_combined/sorted_genotypes.vcf")
     log:
         "logs/{aligner}/bcftools_sort/sorting_{caller}.log"
+    conda: "../envs/bcftools.yaml"
     threads: 8
     shell:
         "bcftools sort {input} > {output} 2> {log}"
@@ -84,5 +88,6 @@ rule annotate_vcf:
     params:
         conf = config["vcfanno_conf"],
     threads: 8
+    conda: "../envs/vcfanno.yaml"
     shell:
         "vcfanno -ends -p {threads} {params.conf} {input} > {output} 2> {log}"

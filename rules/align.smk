@@ -1,10 +1,8 @@
 def get_samples(wildcards):
     return config["samples"][wildcards.sample]
 
-
 def get_all_samples(wildcards):
     return config["samples"].values()
-
 
 rule minimap2_align:
     input:
@@ -18,6 +16,7 @@ rule minimap2_align:
         8
     log:
         "logs/minimap2/{sample}.log"
+    conda: "../envs/minimap.yaml"
     shell:
         """
         minimap2 --MD -ax map-ont -t {threads} \
@@ -38,6 +37,7 @@ rule minimap2_pbsv_align:
         sample = "{sample}"
     log:
         "logs/minimap2_pbsv/{sample}.log"
+    conda: "../envs/minimap.yaml"
     shell:
         """
         minimap2 -ax map-ont --MD --eqx -L -O 5,56 -E 4,1 -B 5 \
@@ -56,6 +56,7 @@ rule ngmlr_align:
         36
     log:
         "logs/ngmlr/{sample}.log"
+    conda: "../envs/ngmlr.yaml"
     shell:
         "zcat {input.fq}/*.fastq.gz | \
          ngmlr --presets ont -t {threads} -r {input.genome} | \
@@ -68,6 +69,7 @@ rule samtools_index:
     output:
         "{aligner}/alignment/{sample}.bam.bai"
     threads: 4
+    conda: "../envs/samtools.yaml"
     log:
         "logs/{aligner}/samtools_index/{sample}.log"
     shell:
@@ -81,6 +83,7 @@ rule alignment_stats:
         "{aligner}/alignment_stats/{sample}.txt"
     log:
         "logs/{aligner}/alignment_stats/{sample}.log"
+    conda: "../envs/pysam.yaml"
     shell:
         os.path.join(workflow.basedir, "scripts/alignment_stats.py") + \
             " -o {output} {input.bam} 2> {log}"
@@ -98,6 +101,7 @@ rule make_last_index:
     threads: 24
     params:
         index_base = "last/index/windowmasked-index"
+    conda: "../envs/last.yaml"
     shell:
         """
         windowmasker -mk_counts -in {input} > {output.wmstat} && \
@@ -115,6 +119,7 @@ rule last_train:
         fas = temp("last/index/allreads.fas"),
     log:
         "logs/last/last-train/train.log"
+    conda: "../envs/last.yaml"
     params:
         index_base = "last/index/windowmasked-index"
     threads: 36
@@ -138,6 +143,7 @@ rule last_align:
         "logs/last/last-align/{sample}.log"
     output:
         "last/last-align/{sample}.maf.gz"
+    conda: "../envs/last.yaml"
     shell:
         """
         lastal -P{threads} -p {params.train} {params.index_base} {input.fq}/*.fastq.gz \

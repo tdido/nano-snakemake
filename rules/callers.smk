@@ -4,6 +4,7 @@ rule svim_call:
     output:
         "{aligner}/svim_calls/{sample}/final_results.vcf"
     threads: 1
+    conda: "../envs/svim.yaml"
     log:
         "logs/{aligner}/svim_call/{sample}.log"
     shell:
@@ -41,6 +42,7 @@ rule sniffles_genotype:
     output:
         "{aligner}/sniffles_genotypes_temp/{sample}.vcf"
     threads: 8
+    conda: "../envs/sniffles.yaml"
     log:
         "logs/{aligner}/sniffles_genotype/{sample}.log"
     shell:
@@ -61,6 +63,7 @@ rule samtools_split:
         chrom = "{chromosome}"
     log:
         "logs/{aligner}/samtools_split/{sample}-{chromosome}.log"
+    conda: "../envs/samtools.yaml"
     shell:
         "samtools view {input.bam} {params.chrom} -o {output} 2> {log}"
 
@@ -85,6 +88,7 @@ rule nanosv_call:
         2
     log:
         "logs/{aligner}/nanosv/{sample}-{chromosome}.log"
+    conda: "../envs/nanosv.yaml"
     shell:
         """
         reads=$(samtools idxstats {input.bam} | \
@@ -109,6 +113,7 @@ rule npinv:
         "{aligner}/npinv/{sample}.vcf"
     log:
         "logs/{aligner}/npinv/{sample}.log"
+    conda: "../envs/npinv.yaml"
     shell:
         "npinv --input {input.bam} --output {output} 2> {log}"
 
@@ -122,6 +127,7 @@ rule pbsv:
         svsig = temp("minimap2_pbsv/pbsv_svsig/{sample}.svsig.gz"),
     log:
         "logs/minimap2_pbsv/pbsv/{sample}.log"
+    conda: "../envs/pbsv.yaml"
     shell:
         """
         pbsv discover {input.bam} {output.svsig} 2> {log} && \
@@ -138,6 +144,7 @@ rule tandem_genotypes:
         refgene = config["refgene"]
     log:
         "logs/tandem_genotypes/{sample}.log"
+    conda: "../envs/tandem-genotypes.yaml"
     shell:
         """
         tandem-genotypes -g {params.refgene} {params.microsat} {input} > {output} 2> {log}

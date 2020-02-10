@@ -11,6 +11,7 @@ rule survivor:
         same_strand = -1,
         estimate_distance = -1,
         minimum_size = -1,
+    conda: "../envs/survivor.yaml"
     log:
         "logs/{aligner}/{caller}/survivor_{stage}.log"
     shell:
@@ -34,6 +35,7 @@ rule survivor_all:
         same_strand = -1,
         estimate_distance = -1,
         minimum_size = -1,
+    conda: "../envs/survivor.yaml"
     log:
         "logs/{aligner}/all/survivor.log"
     shell:

@@ -14,6 +14,7 @@ rule mosdepth_get:
         aligner = "{aligner}"
     log:
         "logs/{aligner}/mosdepth/mosdepth_{sample}.log"
+    conda: "../envs/mosdepth.yaml"
     shell:
         "mosdepth --threads {threads} \
                   -n \
