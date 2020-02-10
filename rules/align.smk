@@ -104,8 +104,8 @@ rule make_last_index:
     conda: "../envs/last.yaml"
     shell:
         """
-        windowmasker -mk_counts -in {input} > {output.wmstat} && \
-        windowmasker -ustat {output.wmstat} -outfmt fasta -in {input} > {output.masked_genome} && \
+        bin/windowmasker -mk_counts -in {input} > {output.wmstat} && \
+        bin/windowmasker -ustat {output.wmstat} -outfmt fasta -in {input} > {output.masked_genome} && \
         lastdb -P{threads} -uNEAR -R11 -c {params.index_base} {output.masked_genome}
         """
 
@@ -125,7 +125,7 @@ rule last_train:
     threads: 36
     shell:
         """
-        for i in {input.fq}; do echo ${{i}}*.fastq.gz >> {output.fqs}; done 2>> {log}
+        for i in {input.fq}; do echo ${{i}}/*.fastq.gz >> {output.fqs}; done 2>> {log}
         zcat $(cat {output.fqs} | tr '\\n' ' ') \
          | awk 'NR % 4 == 2 {{print ">" ++n "\\n" $0}}' > {output.fas} 2>> {log}
         last-train -P{threads} -Q0 {params.index_base} {output.fas} > {output.params} 2>> {log}
