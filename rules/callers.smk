@@ -39,6 +39,7 @@ rule sniffles_call:
     resources:
         mem=get_resource("sniffles_call", "mem"),
         walltime=get_resource("sniffles_call", "walltime")
+    conda: "../envs/sniffles.yaml"
     log:
         "logs/{aligner}/sniffles_call/{sample}.log"
     shell:
