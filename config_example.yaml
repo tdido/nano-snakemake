@@ -1,3 +1,6 @@
+outdir: out
+logdir: log
+
 samples:
     sampleA: /path/to/sampleA/fastq
     sampleB: /path/to/sampleB/fastq
