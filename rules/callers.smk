@@ -78,13 +78,11 @@ rule samtools_split:
     resources:
         mem=get_resource("samtools_split", "mem"),
         walltime=get_resource("samtools_split", "walltime")
-    params:
-        chrom = "{chromosome}"
     log:
         f"{LOGDIR}/{{aligner}}/samtools_split/{{sample}}-{{chromosome}}.log"
     conda: "../envs/samtools.yaml"
     shell:
-        "samtools view {input.bam} {params.chrom} -o {output} 2> {log}"
+        "samtools view {input.bam} {wildcards.chromosome} -o {output} 2> {log}"
 
 
 rule nanosv_call:
